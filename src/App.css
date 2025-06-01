@@ -45,3 +45,8 @@
   opacity: 1;
   pointer-events: auto;
 }
+
+.chat-hover:hover {
+  background-color: #efefef;
+  transition: 0.3s ease;
+}

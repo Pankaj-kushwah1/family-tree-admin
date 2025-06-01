@@ -5145,7 +5145,7 @@ ul {
             text-align: center;
             font-weight: bold;
             font-size: 20px;
-            margin-bottom: 15px;
+            /* margin-bottom: 15px; */
         }
         .ms-auto {
     margin-left: auto !important;

@@ -8,11 +8,14 @@ import { allUsersList } from '../utils/authUtils'
 const Dashboard = () => {
     const navigate = useNavigate();
     const [userData, setUsersData] = useState([]);
+    const [loading, setLoading] = useState(false);
 
     const userList = async () => {
         setLoading(true);
         try {
             const response = await allUsersList();
+            console.log(response);
+
             if (response?.success) {
                 console.log("Response", response.users);
                 setUsersData(response.users);
@@ -23,12 +26,10 @@ const Dashboard = () => {
             setLoading(false);
         }
     };
+    console.log("userData", userData);
 
     useEffect(() => {
         userList()
-    }, [])
-
-    useEffect(() => {
         flatpickr("#calendar", {
             inline: true,
             enableTime: false,
@@ -51,7 +52,7 @@ const Dashboard = () => {
             />
             <div className="breadcrumbs-area">
                 <div className="heading">Dashboard</div>
-                <p>Hi, welcome to task management dashboard</p>
+                <p style={{fontSize:"13px"}}>Hi, welcome to task management dashboard</p>
             </div>
             <div className="container-fluid p-4">
                 <div className="row">
@@ -74,9 +75,9 @@ const Dashboard = () => {
                                     }}
                                 />
                                 <div className="ml-3">
-                                    <h5 className="mb-1">Hi, Vanshika Pandey</h5>
-                                    <h4 className="title text-left">Welcome to Management</h4>
-                                    <p className="mb-0">
+                                    <h5 className="mb-1" style={{fontSize:"15px"}}>Hi, Vanshika Pandey</h5>
+                                    <h4 className="title text-left" style={{fontSize:"22px"}}>Welcome to Management</h4>
+                                    <p className="mb-0" style={{fontSize:"18px"}}>
                                         Project activity will be updated here. Click on the name
                                         section to set your configuration.
                                     </p>
@@ -119,8 +120,8 @@ const Dashboard = () => {
                         </div>
                         <div className="card-box px-2">
                             <div className="d-flex justify-content-between mb-3">
-                                <h5>Total Users</h5>
-                                <Link to="/users-list">View All</Link>
+                                <h5>Total Users: <strong>{userData?.length || 0}</strong></h5>
+                                <Link to="/users-list" style={{fontSize:"11px",textDecoration:"none"}}>View All</Link>
                             </div>
                             <div className="table-responsive">
                                 <table className="table user-table">
@@ -135,7 +136,27 @@ const Dashboard = () => {
                                         </tr>
                                     </thead>
                                     <tbody>
-
+                                        {userData.length === 0 ? (
+                                            <tr>
+                                                <td colSpan="5" className="text-center">No users found</td>
+                                            </tr>
+                                        ) : (
+                                            userData.map((user) => (
+                                                <tr key={user.id || user._id}>
+                                                    <td>
+                                                        <img
+                                                            src={user.profileImageUrl || "https://i.pravatar.cc/32"}
+                                                            alt={user.name}
+                                                            style={{ width: "40px", height: "40px", borderRadius: '50%' }}
+                                                        />
+                                                    </td>
+                                                    <td>{user.fullName}</td>
+                                                    <td>{user.countryCode} {user.phone}</td>
+                                                    <td>{user.email}</td>
+                                                    <td>{user.city ? `${user.city}, ${user.country}` : user.country || "N/A"}</td>
+                                                </tr>
+                                            ))
+                                        )}
                                     </tbody>
                                 </table>
                             </div>

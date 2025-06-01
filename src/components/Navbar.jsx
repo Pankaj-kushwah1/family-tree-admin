@@ -1,8 +1,26 @@
-import React from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import img1 from "../assets/img/logo.png"
 import img2 from "../assets/img/figure/admin.jpg"
 
 const Navbar = () => {
+    const [dropdownOpen, setDropdownOpen] = useState(false);
+    const dropdownRef = useRef(null);
+
+    const toggleDropdown = () => {
+        setDropdownOpen(prev => !prev);
+    };
+
+    useEffect(() => {
+        function handleClickOutside(event) {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setDropdownOpen(false);
+            }
+        }
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
     return (
         <div className="navbar navbar-expand-md header-menu-one bg-light">
             <div className="nav-bar-header-one">
@@ -63,17 +81,19 @@ const Navbar = () => {
                                 {" "}
                                 {/* <i className="fa fa-bell" /> <span className="num">2</span> */}
                                 {/* <i class="bi bi-bell-fill"/> <span className="num">2</span> */}
-                                <i className="bi bi-bell"/> <span className="num">2</span>
+                                <i className="bi bi-bell" /> <span className="num">2</span>
                             </div>
                         </a>
                     </li>
-                    <li className="navbar-item dropdown header-admin">
+                    <li className="navbar-item dropdown header-admin" ref={dropdownRef} style={{ textDecoration: "none" }}>
                         <a
                             className="navbar-nav-link dropdown-toggle"
+                            style={{ textDecoration: "none" }}
                             href="#"
                             role="button"
                             data-toggle="dropdown"
                             aria-expanded="false"
+                            onClick={toggleDropdown}
                         >
                             <div className="admin-img mr-3">
                                 <img src={img2} alt="Admin" />
@@ -83,27 +103,33 @@ const Navbar = () => {
                                 <span>Admin</span>
                             </div>
                         </a>
-                        <div className="dropdown-menu dropdown-menu-right">
-                            <div className="item-header">
-                                <h6 className="item-title">Steven Zone</h6>
+                        {dropdownOpen && (
+                            <div className="dropdown-menu dropdown-menu-right show">
+                                <div className="item-header">
+                                    <h6 className="item-title">Steven Zone</h6>
+                                </div>
+                                <div className="item-content">
+                                    <ul className="settings-list">
+                                        <li>
+                                            <a href="#">
+                                                <i className="flaticon-user" />
+                                                My Profile
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="#" onClick={(e) => {
+                                                e.preventDefault();
+                                                localStorage.clear();
+                                                window.location.href = "/login";
+                                            }}>
+                                                <i className="flaticon-turn-off" />
+                                                Log Out
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
                             </div>
-                            <div className="item-content">
-                                <ul className="settings-list">
-                                    <li>
-                                        <a href="#">
-                                            <i className="flaticon-user" />
-                                            My Profile
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="login.html">
-                                            <i className="flaticon-turn-off" />
-                                            Log Out
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
+                        )}
                     </li>
                 </ul>
             </div>

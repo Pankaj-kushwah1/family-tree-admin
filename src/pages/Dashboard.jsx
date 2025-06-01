@@ -46,9 +46,6 @@ const Dashboard = () => {
             }
 
             setUsersData(prev => prev.filter(user => user._id !== userToDelete._id));
-            // if (filtered.length > 0) {
-            //     setFiltered(prev => prev.filter(user => user._id !== userToDelete._id));
-            // }
 
             setDeleteModalOpen(false);
             setUserToDelete(null);
@@ -217,18 +214,6 @@ const Dashboard = () => {
 
                                                             {openDropdownId === user._id && (
                                                                 <div className="dropdown-menu mb-3 show position-absolute" style={{ left: "-121px" }}>
-                                                                    {/* <a
-                                                                    className="dropdown-item"
-                                                                    href="#"
-                                                                    // data-toggle="modal"
-                                                                    // data-target="#delete"
-                                                                    onClick={() => {
-                                                                        setSelectedUser(user);
-                                                                        setOpenDropdownId(null);
-                                                                    }}
-                                                                >
-                                                                    Delete
-                                                                </a> */}
                                                                     <a
                                                                         className="dropdown-item"
                                                                         href="#"
@@ -327,7 +312,7 @@ const Dashboard = () => {
                 <>
                     <div className={`modal-top ${deleteModalOpen ? 'show' : ''}`}>
                         <div className="modal-header">
-                            <h4 className="modal-title">Delete User</h4>
+                            <h4 className="modal-title" style={{ fontWeight: "400" }}>Delete User</h4>
                             <button
                                 type="button"
                                 className="close"
@@ -342,12 +327,12 @@ const Dashboard = () => {
                                     <label>
                                         Confirm delete user: <strong>{userToDelete?.fullName}</strong>?
                                     </label>
-                                    <p className="text-muted small mt-2">
+                                    <p className="text-muted small mt-2" style={{ fontSize: "13px" }}>
                                         This action cannot be undone.
                                     </p>
                                 </div>
-                                <div className="form-group text-center d-flex justify-content-between mt-5">
-                                    <button
+                                <div className="form-group text-center d-flex justify-content-between mt-2">
+                                    <button style={{ fontSize: "13px" }}
                                         type="button"
                                         className="radius-30 btn-cancel w-50 mr-2"
                                         onClick={() => setDeleteModalOpen(false)}
@@ -359,6 +344,7 @@ const Dashboard = () => {
                                         className="radius-30 btn-add w-50"
                                         onClick={handleDeleteConfirm}
                                         disabled={loading}
+                                        style={{ fontSize: "13px" }}
                                     >
                                         {loading ? 'Deleting...' : 'Confirm Delete'}
                                     </button>

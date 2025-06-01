@@ -232,9 +232,9 @@ const Users = () => {
                                 Advance Search
                             </div>
                             <div className="d-flex">
-                                <button className="btn btn-outline-secondary btn-sm mr-2" style={{ fontSize: "13px" }}>
+                                {/* <button className="btn btn-outline-secondary btn-sm mr-2" style={{ fontSize: "13px" }}>
                                     <img src={img2} /> Choose Search Options
-                                </button>
+                                </button> */}
                                 <button
                                     className="btn btn-danger-outline btn-sm mr-2" style={{ fontSize: "13px", border: "red" }}
                                     onClick={() => {
@@ -358,13 +358,13 @@ const Users = () => {
                                     </button>
                                 </div>
                             </div>
-                            <button
+                            {/* <button
                                 className="btn btn-outline-secondary btn-sm"
                                 data-toggle="modal"
                                 data-target="#manage" style={{ fontSize: "13px" }}
                             >
                                 <img src={img2} /> Manage Column
-                            </button>
+                            </button> */}
                         </div>
                         {/* User Table */}
                         <div className="table-responsive bg-white">

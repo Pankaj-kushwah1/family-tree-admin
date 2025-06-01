@@ -1,0 +1,42 @@
+import React from 'react'
+import { Link } from 'react-router-dom'
+
+const Sidebar = () => {
+    return (
+        // {/* Sidebar Area Start Here */ }
+        < div className="sidebar-main sidebar-menu-one sidebar-expand-md sidebar-color" >
+            <div className="mobile-sidebar-header d-md-none">
+                <div className="header-logo">
+                    <a href="index.html">
+                        <img src="img/logo1.png" alt="logo" style={{ width: 100 }} />
+                    </a>
+                </div>
+            </div>
+            <div className="sidebar-menu-content">
+                <ul className="nav nav-sidebar-menu sidebar-toggle-view">
+                    <li className="nav-item active">
+                        <Link to="/" className="nav-link">
+                            <i className="flaticon-menu-1" />
+                            <span>Dashboard</span>
+                        </Link>
+                    </li>
+                    <li className="nav-item">
+                        <Link to="/users-list" className="nav-link">
+                            <i className="fa fa-users" />
+                            <span>Users</span>
+                        </Link>
+                    </li>
+                    <li className="nav-item">
+                        <Link to="/help-support" className="nav-link">
+                            <i className="fa fa-headphones" />
+                            <span>Help &amp; Support</span>
+                        </Link>
+                    </li>
+                </ul>
+            </div>
+        </div >
+        // {/* Sidebar Area End Here */ }
+    )
+}
+
+export default Sidebar

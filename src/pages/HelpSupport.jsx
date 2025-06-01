@@ -1,10 +1,11 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { allConversationsList } from '../utils/authUtils';
 
 const HelpSupport = () => {
     const [reportData, setReportData] = useState([]);
     const [selectedUserId, setSelectedUserId] = useState(null);
     const [messages, setMessages] = useState([]);
+    const [loading, setLoading] = useState(true);
     const [newMessage, setNewMessage] = useState('');
     const [showAll, setShowAll] = useState(false);
     const messagesEndRef = useRef(null);
@@ -23,6 +24,7 @@ const HelpSupport = () => {
 
     const allConversation = async () => {
         try {
+            setLoading(true);
             const res = await allConversationsList();
             if (res.success) {
                 setReportData(res.conversation);
@@ -33,6 +35,8 @@ const HelpSupport = () => {
             }
         } catch (error) {
             console.error(error);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -82,19 +86,23 @@ const HelpSupport = () => {
         : reportData
             .filter(item => item.messages?.length > 0)
             .sort((a, b) => {
-                const aTime = new Date(a.messages?.[a.messages.length - 1]?.createdAt || 0);
-                const bTime = new Date(b.messages?.[b.messages.length - 1]?.createdAt || 0);
+                const aTime = new Date(a.messages?.[a.messages.length - 1]|| 0);
+                const bTime = new Date(b.messages?.[b.messages.length - 1] || 0);
                 return bTime - aTime;
             })
-            .slice(0, 10); // 🔥 show only 10 initially
-
-    const sortedUsers = [...visibleUsers].sort((a, b) => {
-        const aTime = new Date(a.messages?.[a.messages.length - 1]?.createdAt || 0);
-        const bTime = new Date(b.messages?.[b.messages.length - 1]?.createdAt || 0);
-        return bTime - aTime;
-    });
+            .slice(0, 10);
 
     console.log("reportData", reportData);
+
+    if (loading) {
+        return (
+            <div className="d-flex justify-content-center align-items-center" style={{ height: '100vh' }}>
+                <div className="spinner-border text-primary" role="status">
+                    <span class="loader"></span>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="container-fluid py-4 bg-white text-black" style={{ minHeight: '100vh' }}>

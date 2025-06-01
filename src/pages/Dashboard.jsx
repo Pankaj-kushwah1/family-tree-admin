@@ -9,6 +9,57 @@ const Dashboard = () => {
     const navigate = useNavigate();
     const [userData, setUsersData] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [openDropdownId, setOpenDropdownId] = useState(null);
+    const [userToDelete, setUserToDelete] = useState(null);
+    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+
+    const toggleDropdown = (userId) => {
+        setOpenDropdownId(prev => (prev === userId ? null : userId));
+    };
+
+    const handleDeleteClick = (user) => {
+        setUserToDelete(user);
+        setDeleteModalOpen(true);
+        setOpenDropdownId(null);
+    };
+
+    const handleDeleteConfirm = async (e) => {
+        e.preventDefault();
+
+        if (!userToDelete) return;
+
+        try {
+            setLoading(true);
+
+            const response = await fetch(
+                `https://server.rmmbr.me/api/v1/user/delete-account/${userToDelete._id}`,
+                {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error('Failed to delete user');
+            }
+
+            setUsersData(prev => prev.filter(user => user._id !== userToDelete._id));
+            // if (filtered.length > 0) {
+            //     setFiltered(prev => prev.filter(user => user._id !== userToDelete._id));
+            // }
+
+            setDeleteModalOpen(false);
+            setUserToDelete(null);
+
+        } catch (error) {
+            console.error("Delete failed:", error);
+            alert(`Delete failed: ${error.message}`);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const userList = async () => {
         setLoading(true);
@@ -52,11 +103,11 @@ const Dashboard = () => {
             />
             <div className="breadcrumbs-area">
                 <div className="heading">Dashboard</div>
-                <p style={{fontSize:"13px"}}>Hi, welcome to task management dashboard</p>
+                <p style={{ fontSize: "13px" }}>Hi, welcome to task management dashboard</p>
             </div>
             <div className="container-fluid p-4">
                 <div className="row">
-                    <div className="col-md-8">
+                    <div className="col-md-12">
                         <div className="card-box  pb-0">
                             <div className="d-flex">
                                 <img
@@ -75,9 +126,9 @@ const Dashboard = () => {
                                     }}
                                 />
                                 <div className="ml-3">
-                                    <h5 className="mb-1" style={{fontSize:"15px"}}>Hi, Vanshika Pandey</h5>
-                                    <h4 className="title text-left" style={{fontSize:"22px"}}>Welcome to Management</h4>
-                                    <p className="mb-0" style={{fontSize:"18px"}}>
+                                    <h5 className="mb-1" style={{ fontSize: "15px" }}>Hi, Vanshika Pandey</h5>
+                                    <h4 className="title text-left" style={{ fontSize: "22px" }}>Welcome to Management</h4>
+                                    <p className="mb-0" style={{ fontSize: "18px" }}>
                                         Project activity will be updated here. Click on the name
                                         section to set your configuration.
                                     </p>
@@ -121,7 +172,7 @@ const Dashboard = () => {
                         <div className="card-box px-2">
                             <div className="d-flex justify-content-between mb-3">
                                 <h5>Total Users: <strong>{userData?.length || 0}</strong></h5>
-                                <Link to="/users-list" style={{fontSize:"11px",textDecoration:"none"}}>View All</Link>
+                                <Link to="/users-list" style={{ fontSize: "11px", textDecoration: "none" }}>View All</Link>
                             </div>
                             <div className="table-responsive">
                                 <table className="table user-table">
@@ -132,7 +183,7 @@ const Dashboard = () => {
                                             <th>Number</th>
                                             <th>Email</th>
                                             <th>Location</th>
-                                            {/* <th>Action</th> */}
+                                            <th>Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -154,6 +205,56 @@ const Dashboard = () => {
                                                     <td>{user.countryCode} {user.phone}</td>
                                                     <td>{user.email}</td>
                                                     <td>{user.city ? `${user.city}, ${user.country}` : user.country || "N/A"}</td>
+                                                    <td align="center">
+                                                        <div className="dropdown action-dropdown position-relative">
+                                                            <span
+                                                                className="ellipsis-btn"
+                                                                onClick={() => toggleDropdown(user._id)}
+                                                                style={{ cursor: "pointer" }}
+                                                            >
+                                                                <i className="fa fa-ellipsis-v" />
+                                                            </span>
+
+                                                            {openDropdownId === user._id && (
+                                                                <div className="dropdown-menu mb-3 show position-absolute" style={{ left: "-121px" }}>
+                                                                    {/* <a
+                                                                    className="dropdown-item"
+                                                                    href="#"
+                                                                    // data-toggle="modal"
+                                                                    // data-target="#delete"
+                                                                    onClick={() => {
+                                                                        setSelectedUser(user);
+                                                                        setOpenDropdownId(null);
+                                                                    }}
+                                                                >
+                                                                    Delete
+                                                                </a> */}
+                                                                    <a
+                                                                        className="dropdown-item"
+                                                                        href="#"
+                                                                        onClick={(e) => {
+                                                                            e.preventDefault();
+                                                                            handleDeleteClick(user);
+                                                                        }}
+                                                                    >
+                                                                        Delete
+                                                                    </a>
+                                                                    <a
+                                                                        className="dropdown-item"
+                                                                        href="#"
+                                                                        data-toggle="modal"
+                                                                        data-target="#deductpp"
+                                                                        onClick={() => {
+                                                                            setSelectedUser(user);
+                                                                            setOpenDropdownId(null);
+                                                                        }}
+                                                                    >
+                                                                        Profile
+                                                                    </a>
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    </td>
                                                 </tr>
                                             ))
                                         )}
@@ -162,7 +263,7 @@ const Dashboard = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="col-md-4">
+                    {/* <div className="col-md-4">
                         <div className="calendar-box mb-4">
                             <div id="calendar" />
                             <div className="activity-card">
@@ -219,14 +320,60 @@ const Dashboard = () => {
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> */}
                 </div>
             </div>
-            {/* Dashboard Content End Here */}
-            {/* Modal */}
-            <div className="modal fade" id="delete" role="dialog">
+            {deleteModalOpen && (
+                <>
+                    <div className={`modal-top ${deleteModalOpen ? 'show' : ''}`}>
+                        <div className="modal-header">
+                            <h4 className="modal-title">Delete User</h4>
+                            <button
+                                type="button"
+                                className="close"
+                                onClick={() => setDeleteModalOpen(false)}
+                            >
+                                ×
+                            </button>
+                        </div>
+                        <div className="modal-body">
+                            <form>
+                                <div className="form-group">
+                                    <label>
+                                        Confirm delete user: <strong>{userToDelete?.fullName}</strong>?
+                                    </label>
+                                    <p className="text-muted small mt-2">
+                                        This action cannot be undone.
+                                    </p>
+                                </div>
+                                <div className="form-group text-center d-flex justify-content-between mt-5">
+                                    <button
+                                        type="button"
+                                        className="radius-30 btn-cancel w-50 mr-2"
+                                        onClick={() => setDeleteModalOpen(false)}
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className="radius-30 btn-add w-50"
+                                        onClick={handleDeleteConfirm}
+                                        disabled={loading}
+                                    >
+                                        {loading ? 'Deleting...' : 'Confirm Delete'}
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div
+                        className={`modal-top-backdrop ${deleteModalOpen ? 'show' : ''}`}
+                        onClick={() => setDeleteModalOpen(false)}
+                    />
+                </>
+            )}
+            {/* <div className="modal fade" id="delete" role="dialog">
                 <div className="modal-dialog">
-                    {/* Modal content*/}
                     <div className="modal-content">
                         <div className="modal-header">
                             <h4 className="modal-title">Delete Member </h4>
@@ -249,7 +396,7 @@ const Dashboard = () => {
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> */}
             <div className="modal fade" id="deductpp" role="dialog">
                 <div className="modal-dialog">
                     <div className="modal-content">

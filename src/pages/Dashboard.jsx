@@ -1,23 +1,51 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import Navbar from '../components/Navbar'
 import Sidebar from '../components/Sidebar'
 import img1 from "../assets/img/welcome.png"
 import img2 from "../assets/img/bg-1.png"
+import { Link, useNavigate } from 'react-router-dom'
+import { allUsersList } from '../utils/authUtils'
 
 const Dashboard = () => {
+    const navigate = useNavigate();
+    const [userData, setUsersData] = useState([]);
+
+    const userList = async () => {
+        setLoading(true);
+        try {
+            const response = await allUsersList();
+            if (response?.success) {
+                console.log("Response", response.users);
+                setUsersData(response.users);
+            }
+        } catch (error) {
+            console.error("Error fetching users:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        userList()
+    }, [])
+
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            navigate('/login');
+        }
+    }, [navigate]);
+
     return (
         <>
             <link
                 rel="stylesheet"
                 href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"
             />
-            {/* Breadcubs Area Start Here */}
             <div className="breadcrumbs-area">
                 <div className="heading">Dashboard</div>
                 <p>Hi, welcome to task management dashboard</p>
             </div>
-            {/* Breadcubs Area End Here */}
-            {/* Dashboard summery Start Here */}
             <div className="container-fluid p-4">
                 <div className="row">
                     <div className="col-md-8">
@@ -85,7 +113,7 @@ const Dashboard = () => {
                         <div className="card-box px-2">
                             <div className="d-flex justify-content-between mb-3">
                                 <h5>Total Users</h5>
-                                <a href="#">View All</a>
+                                <Link to="/users-list">View All</Link>
                             </div>
                             <div className="table-responsive">
                                 <table className="table user-table">
@@ -96,10 +124,12 @@ const Dashboard = () => {
                                             <th>Number</th>
                                             <th>Email</th>
                                             <th>Location</th>
-                                            <th>Action</th>
+                                            {/* <th>Action</th> */}
                                         </tr>
                                     </thead>
-                                    <tbody>{/* 7 identical users */}</tbody>
+                                    <tbody>
+
+                                    </tbody>
                                 </table>
                             </div>
                         </div>
@@ -110,11 +140,10 @@ const Dashboard = () => {
                             <div className="activity-card">
                                 <div className="activity-header">
                                     <span>Activity</span>
-                                    <a href="#" style={{ fontSize: 14 }}>
+                                    <Link to="/users-list" style={{ fontSize: 14 }}>
                                         View All
-                                    </a>
+                                    </Link>
                                 </div>
-                                {/* Repeat this block for each item */}
                                 <div className="activity-item">
                                     <div className="activity-avatar">EK</div>
                                     <div>

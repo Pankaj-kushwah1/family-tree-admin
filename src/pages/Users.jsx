@@ -4,6 +4,7 @@ import img1 from "../assets/img/refresh.png"
 import img2 from "../assets/img/apps.png"
 
 const Users = () => {
+    const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2ODFlM2RiM2U0YWRlYjdhMWJmYTg0YzIiLCJpYXQiOjE3NDg3NzE2MDZ9.Ikw6eqHNrQ_bDDS9nbAeqdcxPSQRLRuKBT1q9WD3wvA"
     const [userData, setUsersData] = useState([]);
     const [limit, setLimit] = useState(10);
     const [loading, setLoading] = useState(false);
@@ -11,6 +12,8 @@ const Users = () => {
     const [selectedUserId, setSelectedUserId] = useState(null);
     const [selectedUser, setSelectedUser] = useState(null);
     const [openDropdownId, setOpenDropdownId] = useState(null);
+    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+    const [userToDelete, setUserToDelete] = useState(null);
     const [searchParams, setSearchParams] = useState({
         name: "",
         number: "",
@@ -20,6 +23,50 @@ const Users = () => {
         pp: "",
         country: ""
     });
+
+    const handleDeleteClick = (user) => {
+        setUserToDelete(user);
+        setDeleteModalOpen(true);
+        setOpenDropdownId(null);
+    };
+
+    const handleDeleteConfirm = async (e) => {
+        e.preventDefault();
+
+        if (!userToDelete) return;
+
+        try {
+            setLoading(true);
+
+            const response = await fetch(
+                `https://server.rmmbr.me/api/v1/user/delete-account/${userToDelete._id}`,
+                {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error('Failed to delete user');
+            }
+
+            setUsersData(prev => prev.filter(user => user._id !== userToDelete._id));
+            if (filtered.length > 0) {
+                setFiltered(prev => prev.filter(user => user._id !== userToDelete._id));
+            }
+
+            setDeleteModalOpen(false);
+            setUserToDelete(null);
+
+        } catch (error) {
+            console.error("Delete failed:", error);
+            alert(`Delete failed: ${error.message}`);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const toggleDropdown = (userId) => {
         setOpenDropdownId(prev => (prev === userId ? null : userId));
@@ -371,14 +418,24 @@ const Users = () => {
 
                                                         {openDropdownId === user._id && (
                                                             <div className="dropdown-menu mb-3 show position-absolute" style={{ left: "-121px" }}>
-                                                                <a
+                                                                {/* <a
                                                                     className="dropdown-item"
                                                                     href="#"
-                                                                    data-toggle="modal"
-                                                                    data-target="#delete"
+                                                                    // data-toggle="modal"
+                                                                    // data-target="#delete"
                                                                     onClick={() => {
                                                                         setSelectedUser(user);
                                                                         setOpenDropdownId(null);
+                                                                    }}
+                                                                >
+                                                                    Delete
+                                                                </a> */}
+                                                                <a
+                                                                    className="dropdown-item"
+                                                                    href="#"
+                                                                    onClick={(e) => {
+                                                                        e.preventDefault();
+                                                                        handleDeleteClick(user);
                                                                     }}
                                                                 >
                                                                     Delete
@@ -393,7 +450,7 @@ const Users = () => {
                                                                         setOpenDropdownId(null);
                                                                     }}
                                                                 >
-                                                                    Deduct PP
+                                                                    Profile
                                                                 </a>
                                                             </div>
                                                         )}
@@ -408,7 +465,7 @@ const Users = () => {
                     </div>
                 </div>
             </div>
-            <div className="modal fade" id="delete" role="dialog">
+            {/* <div className="modal fade" id="delete" role="dialog">
                 <div className="modal-dialog">
                     <div className="modal-content">
                         <div className="modal-header">
@@ -432,7 +489,104 @@ const Users = () => {
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> */}
+            {/* {deleteModalOpen && (
+                <div className="modal show" style={{ display: 'block' }} id="delete" role="dialog">
+                    <div className="modal-dialog">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <h4 className="modal-title">Delete User</h4>
+                                <button
+                                    type="button"
+                                    className="close"
+                                    onClick={() => setDeleteModalOpen(false)}
+                                >
+                                    ×
+                                </button>
+                            </div>
+                            <div className="modal-body">
+                                <form>
+                                    <div className="form-group">
+                                        <label>
+                                            Confirm delete user: <strong>{userToDelete?.fullName}</strong>?
+                                        </label>
+                                        <p className="text-muted small mt-2">
+                                            This action cannot be undone.
+                                        </p>
+                                    </div>
+                                    <div className="form-group text-center d-flex justify-content-between mt-5">
+                                        <button
+                                            type="button"
+                                            className="radius-30 btn-cancel w-50 mr-2"
+                                            onClick={() => setDeleteModalOpen(false)}
+                                        >
+                                            Cancel
+                                        </button>
+                                        <button
+                                            type="button"
+                                            className="radius-30 btn-add w-50"
+                                            onClick={handleDeleteConfirm}
+                                            disabled={loading}
+                                        >
+                                            {loading ? 'Deleting...' : 'Confirm Delete'}
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="modal-backdrop fade show"></div>
+                </div>
+            )} */}
+            {deleteModalOpen && (
+                <>
+                    <div className={`modal-top ${deleteModalOpen ? 'show' : ''}`}>
+                        <div className="modal-header">
+                            <h4 className="modal-title">Delete User</h4>
+                            <button
+                                type="button"
+                                className="close"
+                                onClick={() => setDeleteModalOpen(false)}
+                            >
+                                ×
+                            </button>
+                        </div>
+                        <div className="modal-body">
+                            <form>
+                                <div className="form-group">
+                                    <label>
+                                        Confirm delete user: <strong>{userToDelete?.fullName}</strong>?
+                                    </label>
+                                    <p className="text-muted small mt-2">
+                                        This action cannot be undone.
+                                    </p>
+                                </div>
+                                <div className="form-group text-center d-flex justify-content-between mt-5">
+                                    <button
+                                        type="button"
+                                        className="radius-30 btn-cancel w-50 mr-2"
+                                        onClick={() => setDeleteModalOpen(false)}
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className="radius-30 btn-add w-50"
+                                        onClick={handleDeleteConfirm}
+                                        disabled={loading}
+                                    >
+                                        {loading ? 'Deleting...' : 'Confirm Delete'}
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div
+                        className={`modal-top-backdrop ${deleteModalOpen ? 'show' : ''}`}
+                        onClick={() => setDeleteModalOpen(false)}
+                    />
+                </>
+            )}
             <div className="modal fade" id="deductpp" role="dialog">
                 <div className="modal-dialog">
                     {/* Modal content*/}

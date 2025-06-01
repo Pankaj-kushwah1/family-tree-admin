@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom'
 
 const Sidebar = () => {
     return (
-        // {/* Sidebar Area Start Here */ }
         < div className="sidebar-main sidebar-menu-one sidebar-expand-md sidebar-color" >
             <div className="mobile-sidebar-header d-md-none">
                 <div className="header-logo">

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import Navbar from '../components/Navbar'
-import Sidebar from '../components/Sidebar'
+import flatpickr from "flatpickr";
 import img1 from "../assets/img/welcome.png"
 import img2 from "../assets/img/bg-1.png"
 import { Link, useNavigate } from 'react-router-dom'
@@ -28,6 +27,14 @@ const Dashboard = () => {
     useEffect(() => {
         userList()
     }, [])
+
+    useEffect(() => {
+        flatpickr("#calendar", {
+            inline: true,
+            enableTime: false,
+            dateFormat: "Y-m-d"
+        });
+    }, []);
 
     useEffect(() => {
         const token = localStorage.getItem('token');

@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "https://server.rmmbr.me/api/v1";
+const API_URL = "https://backend.rmmbr.me/api/v1";
 
 const token = localStorage.getItem("token");
 

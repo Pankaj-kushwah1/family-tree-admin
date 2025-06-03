@@ -45,7 +45,7 @@ const Login = () => {
 
             if (res.success) {
                 localStorage.setItem("token", res.token);
-                localStorage.setItem("user", JSON.stringify(res.user));
+                localStorage.setItem("userData", JSON.stringify(res.user));
                 navigate("/");
             } else {
                 setServerError(res.message || "Login failed.");

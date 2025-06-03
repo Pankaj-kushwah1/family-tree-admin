@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { allConversationsList } from "../utils/authUtils";
 import { io } from "socket.io-client";
-import { format, isToday, isYesterday, parseISO } from "date-fns";
 
 const HelpSupport = () => {
     const [users, setUsers] = useState([]);
@@ -18,27 +17,6 @@ const HelpSupport = () => {
     const messagesEndRef = useRef(null);
 
     const socketRef = useRef();
-
-
-
-    const groupMessagesByDate = (messages) => {
-        return messages.reduce((groups, message) => {
-            const dateKey = message.createdAt
-                ? format(parseISO(message.createdAt), "yyyy-MM-dd")
-                : "unknown";
-
-            if (!groups[dateKey]) groups[dateKey] = [];
-            groups[dateKey].push(message);
-            return groups;
-        }, {});
-    };
-
-    const formatDateLabel = (dateStr) => {
-        const dateObj = parseISO(dateStr);
-        if (isToday(dateObj)) return "Today";
-        if (isYesterday(dateObj)) return "Yesterday";
-        return format(dateObj, "dd-MM-yyyy");
-    };
 
 
     useEffect(() => {
@@ -70,7 +48,7 @@ const HelpSupport = () => {
         if (!token) return;
 
         socketRef.current = io(BASE_URL, {
-            transports: ["websocket"],
+            transports: ["websocket"]
         });
 
         console.log("Socket initialized:", socketRef.current);
@@ -189,7 +167,7 @@ const HelpSupport = () => {
                             >
                                 {messages.length === 0 && <p>No messages yet. Say hi!</p>}
 
-                                {/* {messages.map((msg, i) => {
+                                {messages.map((msg, i) => {
                                     const isAdmin = msg.msgByUserId === ADMIN_ID;
                                     return (
                                         <div
@@ -215,53 +193,7 @@ const HelpSupport = () => {
                                             </div>
                                         </div>
                                     );
-                                })} */}
-                                {Object.entries(groupMessagesByDate(messages)).map(([date, msgs]) => (
-                                    <div key={date}>
-                                        <div
-                                            className="text-center my-3"
-                                            style={{
-                                                fontWeight: "600",
-                                                color: "#555",
-                                                backgroundColor: "#e0e0e0",
-                                                borderRadius: "20px",
-                                                padding: "4px 12px",
-                                                width: "fit-content",
-                                                margin: "0 auto",
-                                            }}
-                                        >
-                                            {formatDateLabel(date)}
-                                        </div>
-
-                                        {msgs.map((msg, i) => {
-                                            const isAdmin = msg.msgByUserId === ADMIN_ID;
-                                            return (
-                                                <div
-                                                    key={i}
-                                                    className={`d-flex mb-2 ${isAdmin ? "justify-content-end" : "justify-content-start"}`}
-                                                >
-                                                    <div
-                                                        style={{
-                                                            maxWidth: "70%",
-                                                            backgroundColor: isAdmin ? "#dcf8c6" : "white",
-                                                            padding: "8px 12px",
-                                                            borderRadius: "15px",
-                                                            boxShadow: "0 1px 1px rgba(0,0,0,0.1)",
-                                                        }}
-                                                    >
-                                                        {msg.text}
-                                                        <div style={{ fontSize: 10, color: "#999", marginTop: 4, textAlign: "right" }}>
-                                                            {new Date(msg.createdAt).toLocaleTimeString([], {
-                                                                hour: "2-digit",
-                                                                minute: "2-digit",
-                                                            })}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            );
-                                        })}
-                                    </div>
-                                ))}
+                                })}
                                 <div ref={messagesEndRef} />
                             </div>
 

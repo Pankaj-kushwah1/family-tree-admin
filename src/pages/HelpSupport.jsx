@@ -119,7 +119,6 @@ const HelpSupport = () => {
 
         return () => {
             console.log("Disconnecting socket...");
-            // socketRef.current.disconnect();
             socket.disconnect();
         };
     }, [BASE_URL, users, token]);

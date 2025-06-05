@@ -19,8 +19,6 @@ const HelpSupport = () => {
 
     const socketRef = useRef();
 
-
-
     const groupMessagesByDate = (messages) => {
         return messages.reduce((groups, message) => {
             const dateKey = message.createdAt
@@ -69,35 +67,62 @@ const HelpSupport = () => {
         console.log("Token being used:", token);
         if (!token) return;
 
-        socketRef.current = io(BASE_URL, {
+        // socketRef.current = io(BASE_URL, {
+        //     transports: ["websocket"],
+        // });
+
+        // console.log("Socket initialized:", socketRef.current);
+
+        // socketRef.current.on("connect", () => {
+        //     console.log("✅ Admin connected to socket. ID:", socketRef.current.id);
+        //     socketRef.current.emit("join admin", ADMIN_ID);
+        // });
+
+        // socketRef.current.on("disconnect", (reason) => {
+        //     console.warn("⚠️ Socket disconnected:", reason);
+        // });
+
+        // socketRef.current.on("message received", (msg) => {
+        //     console.log("Message received:", msg);
+        //     setMessages((prev) => [...prev, msg]);
+        // });
+
+        // socketRef.current.on("connect_error", (err) => {
+        //     console.error("❌ Connection error:", err.message);
+        // });
+
+        const socket = io(BASE_URL, {
             transports: ["websocket"],
         });
 
-        console.log("Socket initialized:", socketRef.current);
+        console.log("Socket initialized:", socket);
 
-        socketRef.current.on("connect", () => {
-            console.log("✅ Admin connected to socket. ID:", socketRef.current.id);
-            socketRef.current.emit("join admin", ADMIN_ID);
+        socket.on("connect", () => {
+            console.log("✅ Admin connected to socket. ID:", socket.id);
+            socket.emit("join admin", ADMIN_ID);
         });
 
-        socketRef.current.on("disconnect", (reason) => {
+        socket.on("disconnect", (reason) => {
             console.warn("⚠️ Socket disconnected:", reason);
         });
 
-        socketRef.current.on("message received", (msg) => {
+        socket.on("message received", (msg) => {
             console.log("Message received:", msg);
             setMessages((prev) => [...prev, msg]);
         });
 
-        socketRef.current.on("connect_error", (err) => {
+        socket.on("connect_error", (err) => {
             console.error("❌ Connection error:", err.message);
         });
 
+        socketRef.current = socket;
+
         return () => {
             console.log("Disconnecting socket...");
-            socketRef.current.disconnect();
+            // socketRef.current.disconnect();
+            socket.disconnect();
         };
-    }, []);
+    }, [BASE_URL, users, token]);
 
     useEffect(() => {
         if (messagesEndRef.current) {
@@ -142,12 +167,10 @@ const HelpSupport = () => {
     return (
         <div className="container-fluid py-4 bg-white text-black" style={{ minHeight: "100vh" }}>
             <div className="row">
-                {/* Left Panel: Users */}
                 <div className="col-md-4 border-end" style={{ maxHeight: "90vh", overflowY: "auto" }}>
                     {users.map((item, index) => (
                         <div
                             key={`${item.userDetails._id}-${index}`}
-                            // key={item.userDetails._id}
                             className={`activity-item p-3 cursor-pointer ${selectedUserId === item.userDetails._id ? 'bg-light border' : ''
                                 }`}
                             onClick={() => handleUserClick(item.userDetails._id)}
@@ -172,7 +195,6 @@ const HelpSupport = () => {
                     ))}
                 </div>
 
-                {/* Right Panel: Chat */}
                 <div className="col-md-8 d-flex flex-column" style={{ height: "90vh" }}>
                     {selectedUser ? (
                         <>
@@ -189,33 +211,6 @@ const HelpSupport = () => {
                             >
                                 {messages.length === 0 && <p>No messages yet. Say hi!</p>}
 
-                                {/* {messages.map((msg, i) => {
-                                    const isAdmin = msg.msgByUserId === ADMIN_ID;
-                                    return (
-                                        <div
-                                            key={i}
-                                            className={`d-flex mb-2 ${isAdmin ? "justify-content-end" : "justify-content-start"}`}
-                                        >
-                                            <div
-                                                style={{
-                                                    maxWidth: "70%",
-                                                    backgroundColor: isAdmin ? "#dcf8c6" : "white",
-                                                    padding: "8px 12px",
-                                                    borderRadius: "15px",
-                                                    boxShadow: "0 1px 1px rgba(0,0,0,0.1)",
-                                                }}
-                                            >
-                                                {msg.text}
-                                                <div style={{ fontSize: 10, color: "#999", marginTop: 4, textAlign: "right" }}>
-                                                    {new Date(msg.createdAt).toLocaleTimeString([], {
-                                                        hour: "2-digit",
-                                                        minute: "2-digit",
-                                                    })}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    );
-                                })} */}
                                 {Object.entries(groupMessagesByDate(messages)).map(([date, msgs]) => (
                                     <div key={date}>
                                         <div

@@ -22,7 +22,6 @@
 
 // export default App
 
-// App.jsx
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
 import Login from './pages/Login';
@@ -31,6 +30,7 @@ import Users from './pages/Users';
 import HelpSupport from './pages/HelpSupport';
 import MainLayout from './components/MainLayout';
 import PrivateRoute from './components/PrivateRoute';
+import ChatBox from './pages/ChatBox';
 
 function App() {
   return (
@@ -42,6 +42,8 @@ function App() {
           <Route path="/" element={<MainLayout><Dashboard /></MainLayout>} />
           <Route path="/users-list" element={<MainLayout><Users /></MainLayout>} />
           <Route path="/help-support" element={<MainLayout><HelpSupport /></MainLayout>} />
+          {/* <Route path="/help-support" element={<MainLayout><AllChatData /></MainLayout>} /> */}
+          {/* <Route path="/help-support" element={<MainLayout><ChatBox /></MainLayout>} /> */}
         </Route>
       </Routes>
     </Router>

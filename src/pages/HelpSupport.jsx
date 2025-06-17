@@ -67,30 +67,6 @@ const HelpSupport = () => {
         console.log("Token being used:", token);
         if (!token) return;
 
-        // socketRef.current = io(BASE_URL, {
-        //     transports: ["websocket"],
-        // });
-
-        // console.log("Socket initialized:", socketRef.current);
-
-        // socketRef.current.on("connect", () => {
-        //     console.log("✅ Admin connected to socket. ID:", socketRef.current.id);
-        //     socketRef.current.emit("join admin", ADMIN_ID);
-        // });
-
-        // socketRef.current.on("disconnect", (reason) => {
-        //     console.warn("⚠️ Socket disconnected:", reason);
-        // });
-
-        // socketRef.current.on("message received", (msg) => {
-        //     console.log("Message received:", msg);
-        //     setMessages((prev) => [...prev, msg]);
-        // });
-
-        // socketRef.current.on("connect_error", (err) => {
-        //     console.error("❌ Connection error:", err.message);
-        // });
-
         const socket = io(BASE_URL, {
             transports: ["websocket"],
         });
@@ -106,9 +82,37 @@ const HelpSupport = () => {
             console.warn("⚠️ Socket disconnected:", reason);
         });
 
-        socket.on("message received", (msg) => {
-            console.log("Message received:", msg);
-            setMessages((prev) => [...prev, msg]);
+        // socket.on("message", (allMessages) => {
+        //     console.log("Updated message list:", allMessages);
+        //     setMessages(allMessages);
+        // });
+
+        socket.on("message", (newMessage) => {
+            console.log("📩 Incoming message:", newMessage);
+
+            setConversations((prevConversations) =>
+                prevConversations.map((conv) => {
+                    const userId = conv.userDetails._id;
+                    const isInvolved = userId === newMessage.msgByUserId || userId === newMessage.receiver;
+
+                    console.log("Checking involvement for user:", userId, "Involved:", isInvolved);
+
+                    if (isInvolved) {
+                        return {
+                            ...conv,
+                            messages: [...(conv.messages || []), newMessage],
+                        };
+                    }
+                    return conv;
+                })
+            );
+
+            if (
+                newMessage.msgByUserId === selectedUserId ||
+                newMessage.receiver === selectedUserId
+            ) {
+                setMessages((prev) => [...prev, newMessage]);
+            }
         });
 
         socket.on("connect_error", (err) => {
@@ -121,7 +125,7 @@ const HelpSupport = () => {
             console.log("Disconnecting socket...");
             socket.disconnect();
         };
-    }, [BASE_URL, users, token]);
+    }, [BASE_URL, token]);
 
     useEffect(() => {
         if (messagesEndRef.current) {
@@ -241,6 +245,9 @@ const HelpSupport = () => {
                                                             padding: "8px 12px",
                                                             borderRadius: "15px",
                                                             boxShadow: "0 1px 1px rgba(0,0,0,0.1)",
+                                                            wordWrap: "break-word",       // wraps long words
+                                                            overflowWrap: "break-word",   // ensures it works across browsers
+                                                            whiteSpace: "pre-wrap",       // preserves line breaks
                                                         }}
                                                     >
                                                         {msg.text}

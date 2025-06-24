@@ -5,7 +5,7 @@ import axios from "axios";
 
 const CmsManagement = () => {
   const editorRef = useRef(null);
-  const api_key = "3e4i7xmjvw1ebtnzlwcfxtlk0tuwjfui4s1w0l2pibtj6egn"; // Optional: your TinyMCE API key
+  const api_key = "552pnak96y1byr4ptd3zlegc8shchhdu4sz4sue4v5gsn2si"; // Optional: your TinyMCE API key
 
   const [editorContent, setEditorContent] = useState("");
   const [tableData, setTableData] = useState([]);
@@ -18,7 +18,7 @@ const CmsManagement = () => {
   const fetchPrivacy = async () => {
     try {
       const res = await axios.get(
-        "http://157.173.222.27:3002/api/v1/policy/get/terms"
+        "https://backend.rmmbr.me/api/v1/policy/get/terms"
       );
       const content = res?.data?.data?.content || "";
       setEditorContent(content);
@@ -47,7 +47,7 @@ const CmsManagement = () => {
     setSaving(true);
     try {
       await axios.post(
-        "http://157.173.222.27:3002/api/v1/policy/add-or-update",
+        "https://backend.rmmbr.me/api/v1/policy/add-or-update",
         {
           type: "terms",
           title: "Terms & Conditions",
